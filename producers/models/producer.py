@@ -32,7 +32,7 @@ class Producer:
         self.value_schema = value_schema
         self.num_partitions = num_partitions
         self.num_replicas = num_replicas
-
+        self.admin_client = AdminClient({"bootstrap.servers": BROKER_URL_KAFKA})
         #
         #
         # TODO: Configure the broker properties below. Make sure to reference the project README
@@ -41,7 +41,8 @@ class Producer:
         # for other configuration: https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
         self.broker_properties = {
             'bootstrap.servers': BROKER_URL_KAFKA,
-            'client.id': 'client_producer_jh',
+            'schema.registry.url': BROKER_URL_SCHEMA_REGISTRY,
+            'group.id': 'client_producer_jh',
         }
 
         # If the topic does not already exist, try to create it
@@ -51,10 +52,7 @@ class Producer:
 
         # TODO: Configure the AvroProducer
         self.producer = AvroProducer(
-            {
-                'bootstrap.servers': BROKER_URL_KAFKA,
-                'schema.registry.url': BROKER_URL_SCHEMA_REGISTRY,
-            },
+            self.broker_properties,
             default_key_schema=self.key_schema,
             default_value_schema=self.value_schema,
         )
@@ -66,12 +64,11 @@ class Producer:
         # TODO: Write code that creates the topic for this producer if it does not already exist on the Kafka Broker.
         # code to check if topic exists is already done above
         #
-        client = AdminClient({"bootstrap.servers": BROKER_URL})
-        futures = client.create_topics([
+        futures = self.admin_client.create_topics([
             NewTopic(
                 topic=self.topic_name,
-                num_partitions=5,
-                replication_factor=1
+                num_partitions=self.num_partitions,
+                replication_factor=self.num_partitions,
             )
         ])
         for _, future in futures.items():
@@ -83,8 +80,6 @@ class Producer:
                     raise
 
         logger.info("topic creation kafka integration incomplete - skipping")
-        
-        return None
 
     def time_millis(self):
         return int(round(time.time() * 1000))
@@ -97,8 +92,6 @@ class Producer:
         #
         self.producer.flush()
         logger.info("producer close incomplete - skipping")
-        
-        return None
 
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""
