@@ -44,9 +44,9 @@ class Station(Producer):
             # TODO:
             value_schema=Station.value_schema,
             # TODO:
-            num_partitions=???,
+            num_partitions=1,
             # TODO:
-            num_replicas=???,
+            num_replicas=1,
         )
 
         self.station_id = int(station_id)
@@ -66,17 +66,17 @@ class Station(Producer):
         #
         #
         logger.info("arrival kafka integration incomplete - skipping")
-        #self.producer.produce(
-        #    topic=self.topic_name,
-        #    key={"timestamp": self.time_millis()},
-        #    value={
-        #        #
-        #        #
-        #        # TODO: Configure this
-        #        #
-        #        #
-        #    },
-        #)
+        self.producer.produce(
+           topic=self.topic_name,
+           key={"timestamp": self.time_millis()},
+           value={
+               # TODO: Configure this
+               "train_id": self.train,
+               "direction": self.direction,
+               "prev_station_id": self.prev_station_id,
+               "prev_direction": self.prev_direction
+           },
+        )
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(
