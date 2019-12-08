@@ -29,30 +29,51 @@ class TransformedStation(faust.Record):
     line: str
 
 
-# TODO: Define a Faust Stream that ingests data from the Kafka Connect stations topic and
-#   places it into a new topic with only the necessary information.
+# TODO: Define a Faust Stream that ingests data from the Kafka Connect stations topic and places it into a new topic with only the necessary information.
 app = faust.App("stations-stream", broker="kafka://localhost:9092", store="memory://")
 # TODO: Define the input Kafka Topic. Hint: What topic did Kafka Connect output to?
-# topic = app.topic("TODO", value_type=Station)
+topic = app.topic("connect-stations", value_type=Station)
 # TODO: Define the output Kafka Topic
-# out_topic = app.topic("TODO", partitions=1)
+out_topic = app.topic(
+    "stations-transformed",
+    key_type=int,
+    value_type=TransformedStation,
+    partitions=1
+)
 # TODO: Define a Faust Table
-#table = app.Table(
-#    # "TODO",
-#    # default=TODO,
-#    partitions=1,
-#    changelog_topic=out_topic,
-#)
+table = app.Table(
+   "stations-transformed",
+   default=str,
+   partitions=1,
+   changelog_topic=out_topic,
+)
 
 
+# TODO: Using Faust, transform input `Station` records into `TransformedStation` records. Note that "line" is the color of the station. So if the `Station` record has the field `red` set to true, then you would set the `line` of the `TransformedStation` record to the string `"red"`
 #
-#
-# TODO: Using Faust, transform input `Station` records into `TransformedStation` records. Note that
-# "line" is the color of the station. So if the `Station` record has the field `red` set to true,
-# then you would set the `line` of the `TransformedStation` record to the string `"red"`
-#
+@app.agent(topic)
+async def transform_stations(stations):
+    async for station in stations:
+        line = (
+            'red' if station.red 
+            else 'blue' if station.blue 
+            else 'green'
+        )
+        station_transformed = TransformedStation(
+            station_id=station.station_id,
+            station_name=station.station_name,
+            order=station.order,
+            line=line
+        )
+        
+        await out_topic.send(
+            key=station_transformed.station_id,
+            value=station_transformed
+        )
 #
 
 
 if __name__ == "__main__":
     app.main()
+
+# to see results, run `python connector.py` first to start the connector, then `faust -A faust_stream worker -l info` to start the faust worker, then `kafka-console-consumer --bootstrap-server localhost:9092 --topic stations-transformed --from-beginning` to see results.
