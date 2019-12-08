@@ -48,7 +48,7 @@ class Turnstile(Producer):
         )
         self.station = station
         self.turnstile_hardware = TurnstileHardware(station)
-        self.line = station.super().color
+        self.line = station.color.name
 
     def run(self, timestamp, time_step):
         """Simulates riders entering through the turnstile."""
