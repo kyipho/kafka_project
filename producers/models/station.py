@@ -37,7 +37,8 @@ class Station(Producer):
         # replicas
         #
         #
-        topic_name = f"arrivals_{station_name}" # TODO: Come up with a better topic name
+#       # based on server.py, topic name must include 'station.arrivals'
+        topic_name = "org.chicago.cta.station.arrivals"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -79,7 +80,7 @@ class Station(Producer):
                "train_id": str(self.train),
                "direction": self.direction,
                "line": str(self.color),
-               "train_status": "running",
+               "train_status": str(self.train.status),
                "prev_station_id": str(self.prev_station_id),
                "prev_direction": str(self.prev_direction)
            },

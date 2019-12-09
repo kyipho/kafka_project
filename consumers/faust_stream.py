@@ -35,17 +35,20 @@ app = faust.App("stations-stream", broker="kafka://localhost:9092", store="memor
 topic = app.topic("connect-stations", value_type=Station)
 # TODO: Define the output Kafka Topic
 out_topic = app.topic(
-    "stations-transformed",
+#     "stations-transformed",
+    # must use 'stations.table' as topic name, based on server.py
+    "stations.table",
     key_type=int,
     value_type=TransformedStation,
     partitions=1
 )
 # TODO: Define a Faust Table
 table = app.Table(
-   "stations-transformed",
-   default=str,
-   partitions=1,
-   changelog_topic=out_topic,
+#    "stations-transformed",
+    "stations.table",
+    default=str,
+    partitions=1,
+    changelog_topic=out_topic,
 )
 
 
@@ -76,4 +79,4 @@ async def transform_stations(stations):
 if __name__ == "__main__":
     app.main()
 
-# to see results, run `python connector.py` first to start the connector, then `faust -A faust_stream worker -l info` or `python faust_stream.py worker` to start the faust worker, then `kafka-console-consumer --bootstrap-server localhost:9092 --topic stations-transformed --from-beginning` to see results.
+# to see results, run `python connector.py` first to start the connector, then `faust -A faust_stream worker -l info` or `python faust_stream.py worker` to start the faust worker, then `kafka-console-consumer --bootstrap-server localhost:9092 --topic stations.table --from-beginning` to see results.

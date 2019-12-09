@@ -3,8 +3,7 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-REST_PROXY_URL = "http://localhost:8082"
-CONSUMER_GROUP = "weather_consumer_group"
+
 
 class Weather:
     """Defines the Weather model"""
@@ -17,6 +16,8 @@ class Weather:
     def process_message(self, message):
         """Handles incoming weather data"""
         logger.info("weather process_message is incomplete - skipping")
+        #
+        #
         # TODO: Process incoming weather messages. Set the temperature and status.
-        self.temperature = message['temperature']
-        self.status = message['status']
+        #
+        #

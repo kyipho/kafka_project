@@ -37,7 +37,7 @@ class Turnstile(Producer):
         #
         #
         super().__init__(
-            f"turnstile_{station_name}", # TODO: Come up with a better topic name
+            "org.chicago.cta.station.turnstile_events",
             key_schema=Turnstile.key_schema,
             # TODO:
             value_schema=Turnstile.value_schema,
@@ -68,7 +68,7 @@ class Turnstile(Producer):
                key={"timestamp": int(self.timestamp)},
                value={
                    "station_id": str(self.station),
-                   "station_name": self.station_name,
+                   "station_name": str(self.station_name),
                    "line": self.line
                },
             )

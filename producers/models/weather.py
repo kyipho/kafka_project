@@ -44,7 +44,7 @@ class Weather(Producer):
     )
 
     rest_proxy_url = "http://localhost:8082"
-    TOPIC_NAME = "weather_events"
+    TOPIC_NAME = "org.chicago.weather_events"
 
     key_schema = None
     value_schema = None

@@ -1,9 +1,9 @@
 from confluent_kafka.admin import AdminClient
 
+client = AdminClient({"bootstrap.servers": "PLAINTEXT://localhost:9092"})
 
 def topic_exists(topic):
     """Checks if the given topic exists in Kafka"""
-    client = AdminClient({"bootstrap.servers": "PLAINTEXT://localhost:9092"})
     topic_metadata = client.list_topics(timeout=5)
     return topic in topic_metadata.topics
 
@@ -25,6 +25,5 @@ def topic_pattern_match(pattern):
 # added
 def list_topics():
     """Returns all available Kafka topics in a list"""
-    client = AdminClient({"bootstrap.servers": "PLAINTEXT://localhost:9092"})
     topic_metadata = client.list_topics(timeout=5)
     return topic_metadata.topics
