@@ -60,14 +60,14 @@ async def transform_stations(stations):
             else 'green'
         )
         station_transformed = TransformedStation(
-            station_id=station.station_id,
+            station_id=str(station.station_id),
             station_name=station.station_name,
             order=station.order,
             line=line
         )
         
         await out_topic.send(
-            key=station_transformed.station_id,
+            key=str(station_transformed.station_id),
             value=station_transformed
         )
 #
@@ -76,4 +76,4 @@ async def transform_stations(stations):
 if __name__ == "__main__":
     app.main()
 
-# to see results, run `python connector.py` first to start the connector, then `faust -A faust_stream worker -l info` to start the faust worker, then `kafka-console-consumer --bootstrap-server localhost:9092 --topic stations-transformed --from-beginning` to see results.
+# to see results, run `python connector.py` first to start the connector, then `faust -A faust_stream worker -l info` or `python faust_stream.py worker` to start the faust worker, then `kafka-console-consumer --bootstrap-server localhost:9092 --topic stations-transformed --from-beginning` to see results.
