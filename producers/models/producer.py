@@ -5,7 +5,7 @@ import time
 
 from confluent_kafka import avro
 from confluent_kafka.admin import AdminClient, NewTopic
-from confluent_kafka.avro import AvroProducer
+from confluent_kafka.avro import AvroProducer, CachedSchemaRegistryClient
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +41,11 @@ class Producer:
         # for other configuration: https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
         self.broker_properties = {
             'bootstrap.servers': BROKER_URL_KAFKA,
-            'schema.registry.url': BROKER_URL_SCHEMA_REGISTRY,
+#             'schema.registry.url': BROKER_URL_SCHEMA_REGISTRY,
             'group.id': 'client_producer_jh',
         }
+        
+        schema_registry = CachedSchemaRegistryClient(BROKER_URL_SCHEMA_REGISTRY)
 
         # If the topic does not already exist, try to create it
         if self.topic_name not in Producer.existing_topics:
@@ -53,6 +55,7 @@ class Producer:
         # TODO: Configure the AvroProducer
         self.producer = AvroProducer(
             self.broker_properties,
+            schema_registry=schema_registry,
             default_key_schema=self.key_schema,
             default_value_schema=self.value_schema,
         )
@@ -90,8 +93,8 @@ class Producer:
         #
         # TODO: Write cleanup code for the Producer here
         #
-        self.producer.flush()
         logger.info("producer close incomplete - skipping")
+        self.producer.flush()
 
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""

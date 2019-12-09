@@ -47,7 +47,7 @@ class Turnstile(Producer):
             num_replicas=1,
         )
         self.station_name = station_name
-        self.station = station
+        self.station = str(station)
         self.turnstile_hardware = TurnstileHardware(station)
         self.line = station.color.name
 
@@ -64,11 +64,13 @@ class Turnstile(Producer):
         #
         for i in range(num_entries):
             self.producer.produce(
-               topic=self.topic_name,
-               key={"timestamp": int(self.timestamp)},
-               value={
-                   "station_id": str(self.station),
-                   "station_name": str(self.station_name),
-                   "line": self.line
-               },
+                topic=self.topic_name,
+                key={"timestamp": self.timestamp},
+                value={
+                    "station_id": self.station,
+                    "station_name": self.station_name,
+                    "line": self.line
+                },
+                key_schema=Turnstile.key_schema,
+                value_schema=Turnstile.value_schema
             )

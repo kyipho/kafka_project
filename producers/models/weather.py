@@ -107,21 +107,23 @@ class Weather(Producer):
         
         data = {
                 # TODO: Provide key schema, value schema, and records. schemas must be strings.
-                "key_schema": json.dumps(Weather.key_schema),
-                "value_schema": json.dumps(Weather.value_schema),
-#                 "key_schema": AVRO_KEY_SCHEMA,
-#                 "value_schema": AVRO_VALUE_SCHEMA,
+#                 "key_schema": json.dumps(Weather.key_schema),
+#                 "value_schema": json.dumps(Weather.value_schema),
+                "key_schema": AVRO_KEY_SCHEMA,
+                "value_schema": AVRO_VALUE_SCHEMA,
 #                 "key_schema": Weather.key_schema,
 #                 "value_schema": Weather.value_schema,
-                "records": [{
-                    "key": {
-                        "timestamp": self.time_millis()
+                "records": [
+                    {
+                        "key": {
+                            "timestamp": self.time_millis()
+                        },
+                        "value": {
+                            "temperature": self.temp,
+                            "status": self.status.name
+                        }
                     },
-                    "value": {
-                        "temperature": self.temp,
-                        "status": self.status.name
-                    }
-                }]
+                ]
             }
 
         resp = requests.post(

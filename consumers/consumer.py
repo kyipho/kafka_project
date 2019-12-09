@@ -3,7 +3,7 @@ import logging
 
 import confluent_kafka
 from confluent_kafka import Consumer, OFFSET_BEGINNING
-from confluent_kafka.avro import AvroConsumer
+from confluent_kafka.avro import AvroConsumer, CachedSchemaRegistryClient
 from confluent_kafka.avro.serializer import SerializerError
 from tornado import gen
 
@@ -11,6 +11,7 @@ from tornado import gen
 logger = logging.getLogger(__name__)
 
 BROKER_URL_KAFKA = "PLAINTEXT://localhost:9092"
+BROKER_URL_SCHEMA_REGISTRY = "http://localhost:8081"
 
 class KafkaConsumer:
     """Defines the base kafka consumer class"""
@@ -45,8 +46,12 @@ class KafkaConsumer:
 
         # TODO: Create the Consumer, using the appropriate type.
         if is_avro is True:
-            self.broker_properties["schema.registry.url"] = "http://localhost:8081"
-            self.consumer = AvroConsumer(self.broker_properties)
+#             self.broker_properties["schema.registry.url"] = BROKER_URL_SCHEMA_REGISTRY
+            schema_registry = CachedSchemaRegistryClient(BROKER_URL_SCHEMA_REGISTRY)
+            self.consumer = AvroConsumer(
+                self.broker_properties,
+                schema_registry=schema_registry
+            )
         else:
             self.consumer = Consumer(self.broker_properties)
 
@@ -57,7 +62,7 @@ class KafkaConsumer:
         #
         #
         self.consumer.subscribe(
-            topics=["^" + self.topic_name_pattern + ".*"],
+            topics=[self.topic_name_pattern],
             on_assign=self.on_assign
         )
 

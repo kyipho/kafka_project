@@ -1,10 +1,11 @@
 """Contains functionality related to Weather"""
 import logging
-
+from confluent_kafka import avro
 
 logger = logging.getLogger(__name__)
 REST_PROXY_URL = "http://localhost:8082"
 CONSUMER_GROUP = "weather_consumer_group"
+TOPIC_NAME = "org.chicago.weather_events"
 
 class Weather:
     """Defines the Weather model"""
@@ -18,5 +19,7 @@ class Weather:
         """Handles incoming weather data"""
         logger.info("weather process_message is incomplete - skipping")
         # TODO: Process incoming weather messages. Set the temperature and status.
-        self.temperature = message['temperature']
-        self.status = message['status']
+        
+        value = avro.loads(message.value())
+        self.temperature = value['temperature']
+        self.status = value['status']

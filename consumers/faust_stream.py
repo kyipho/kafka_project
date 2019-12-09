@@ -36,8 +36,8 @@ topic = app.topic("connect-stations", value_type=Station)
 # TODO: Define the output Kafka Topic
 out_topic = app.topic(
 #     "stations-transformed",
-    # must use 'stations.table' as topic name, based on server.py
-    "stations.table",
+    # must use 'org.chicago.cta.stations.table.v1' as topic name, based on server.py and lines.py
+    "org.chicago.cta.stations.table.v1",
     key_type=int,
     value_type=TransformedStation,
     partitions=1
