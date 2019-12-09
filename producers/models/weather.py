@@ -13,6 +13,28 @@ from models.producer import Producer
 
 logger = logging.getLogger(__name__)
 
+AVRO_KEY_SCHEMA = """
+{
+  "type": "record",
+  "name": "weather.key",
+  "fields": [
+    {
+      "name": "timestamp",
+      "type": "long"
+    }
+  ]
+}
+"""
+
+AVRO_VALUE_SCHEMA = """{
+    "type": "record",
+    "name": "weather.value",
+    "fields": [
+        {"name": "temperature", "type": "float"},
+        {"name": "status", "type": "string"}
+    ]
+}
+"""
 
 class Weather(Producer):
     """Defines a simulated weather model"""
@@ -33,7 +55,7 @@ class Weather(Producer):
     def __init__(self, month):
         # TODO: Complete the below by deciding on a topic name, number of partitions, and number of replicas
         super().__init__(
-            topic_name=TOPIC_NAME, # TODO: Come up with a better topic name
+            topic_name=Weather.TOPIC_NAME, # TODO: Come up with a better topic name
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
             # TODO:
@@ -74,40 +96,39 @@ class Weather(Producer):
     def run(self, month):
         self._set_weather(month)
 
-        #
-        #
         # TODO: Complete the function by posting a weather event to REST Proxy. Make sure to
         # specify the Avro schemas and verify that you are using the correct Content-Type header.
-        #
-        #
         logger.info("weather kafka proxy integration incomplete - skipping")
+        
+        # TODO: What Headers need to bet set?
+        headers = {
+            "Content-Type": "application/vnd.kafka.avro.v2+json"
+        }
+        
+        data = {
+                # TODO: Provide key schema, value schema, and records. schemas must be strings.
+                "key_schema": json.dumps(Weather.key_schema),
+                "value_schema": json.dumps(Weather.value_schema),
+#                 "key_schema": AVRO_KEY_SCHEMA,
+#                 "value_schema": AVRO_VALUE_SCHEMA,
+#                 "key_schema": Weather.key_schema,
+#                 "value_schema": Weather.value_schema,
+                "records": [{
+                    "key": {
+                        "timestamp": self.time_millis()
+                    },
+                    "value": {
+                        "temperature": self.temp,
+                        "status": self.status.name
+                    }
+                }]
+            }
+
         resp = requests.post(
-           #
-           #
-           # TODO: What URL should be POSTed to?
-           #
-           #
-           f"{Weather.rest_proxy_url}/topics/{TOPIC_NAME}",
-           #
-           #
-           # TODO: What Headers need to bet set?
-           #
-           #
-           headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
-           data=json.dumps(
-               {
-                   # TODO: Provide key schema, value schema, and records
-                   "key_schema": Weather.key_schema,
-                   "value_schema": Weather.value_schema,
-                   "records": [{
-                       "value": {
-                           "temperature": self.temp,
-                           "status": self.status
-                       }
-                   }]
-                   #
-               }
-           ),
+            # TODO: What URL should be POSTed to?
+            f"{Weather.rest_proxy_url}/topics/{Weather.TOPIC_NAME}",
+            data=json.dumps(data),
+            headers=headers,
         )
         resp.raise_for_status()
 

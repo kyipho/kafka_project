@@ -75,9 +75,9 @@ class Producer:
             try:
                 future.result()
                 print(f'topic {self.topic_name} created successfully!')
-                except Exception as e:
-                    print(f'failed to create topic {self.topic_name}: {e}')
-                    raise
+            except Exception as e:
+                print(f'failed to create topic {self.topic_name}: {e}')
+#                 raise
 
         logger.info("topic creation kafka integration incomplete - skipping")
 

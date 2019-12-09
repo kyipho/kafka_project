@@ -66,3 +66,5 @@ def configure_connector():
 
 if __name__ == "__main__":
     configure_connector()
+
+# to test output, run `python connector.py`, then `kafka-console-consumer --bootstrap-server localhost:9092 --topic connect-stations --from-beginning`
