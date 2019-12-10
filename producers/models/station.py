@@ -71,7 +71,7 @@ class Station(Producer):
         self.prev_direction = prev_direction
         self.train_id = train.train_id
         #
-        logger.info("arrival kafka integration incomplete - skipping")
+#         logger.info("arrival kafka integration incomplete - skipping")
         self.producer.produce(
            topic=self.topic_name,
             key={"timestamp": self.time_millis()},
@@ -88,6 +88,7 @@ class Station(Producer):
             key_schema=Station.key_schema,
             value_schema=Station.value_schema
         )
+        logger.info("produced arrival message")
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(

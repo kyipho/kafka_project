@@ -59,7 +59,7 @@ class Turnstile(Producer):
         # convert timestamp (in datetime.datetime format) to a key
         self.timestamp = int(round(timestamp.timestamp() * 1000))
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
-        logger.info("turnstile kafka integration incomplete - skipping")
+#         logger.info("turnstile kafka integration incomplete - skipping")
         #
         # TODO: Complete this function by emitting a message to the turnstile topic for the number of entries that were calculated
         #
@@ -75,3 +75,4 @@ class Turnstile(Producer):
                 key_schema=Turnstile.key_schema,
                 value_schema=Turnstile.value_schema
             )
+            logger.info("produced turnstile message")

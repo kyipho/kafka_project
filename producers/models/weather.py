@@ -98,7 +98,7 @@ class Weather(Producer):
 
         # TODO: Complete the function by posting a weather event to REST Proxy. Make sure to
         # specify the Avro schemas and verify that you are using the correct Content-Type header.
-        logger.info("weather kafka proxy integration incomplete - skipping")
+#         logger.info("weather kafka proxy integration incomplete - skipping")
         
         # TODO: What Headers need to bet set?
         headers = {

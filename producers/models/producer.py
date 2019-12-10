@@ -82,7 +82,7 @@ class Producer:
                 print(f'failed to create topic {self.topic_name}: {e}')
 #                 raise
 
-        logger.info("topic creation kafka integration incomplete - skipping")
+#         logger.info("topic creation kafka integration incomplete - skipping")
 
     def time_millis(self):
         return int(round(time.time() * 1000))
@@ -93,7 +93,7 @@ class Producer:
         #
         # TODO: Write cleanup code for the Producer here
         #
-        logger.info("producer close incomplete - skipping")
+#         logger.info("producer close incomplete - skipping")
         self.producer.flush()
 
     def time_millis(self):
