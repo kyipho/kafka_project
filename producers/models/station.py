@@ -69,21 +69,24 @@ class Station(Producer):
         self.direction = direction
         self.prev_station_id = prev_station_id
         self.prev_direction = prev_direction
+        self.train_id = train.train_id
         #
         logger.info("arrival kafka integration incomplete - skipping")
         self.producer.produce(
            topic=self.topic_name,
-           key={"timestamp": self.time_millis()},
-           value={
-               # TODO: Configure this
-               "station_id": str(self.station_id),
-               "train_id": str(self.train),
-               "direction": self.direction,
-               "line": str(self.color),
-               "train_status": str(self.train.status),
-               "prev_station_id": str(self.prev_station_id),
-               "prev_direction": str(self.prev_direction)
-           },
+            key={"timestamp": self.time_millis()},
+            value={
+                # TODO: Configure this
+                "station_id": str(self.station_id),
+                "train_id": str(self.train_id),
+                "direction": str(self.direction),
+                "line": str(self.color.name),
+                "train_status": str(self.train.status),
+                "prev_station_id": str(self.prev_station_id),
+                "prev_direction": str(self.prev_direction)
+            },
+            key_schema=Station.key_schema,
+            value_schema=Station.value_schema
         )
 
     def __str__(self):

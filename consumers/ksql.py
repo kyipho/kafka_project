@@ -40,17 +40,14 @@ WITH (
 ) AS
 SELECT
     station_id,
-    station_name,
     COUNT(*) AS count
 FROM turnstile
 GROUP BY
-    station_id,
-    station_name;
+    station_id;
 """
 def execute_statement():
     """Executes the KSQL statement against the KSQL API"""
     if topic_check.topic_exists("TURNSTILE_SUMMARY") is True:
-        print('TURNSTILE_SUMMARY topic exists, delete it first')
         return
 
     logging.debug("executing ksql statement...")

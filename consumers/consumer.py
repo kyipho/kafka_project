@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 BROKER_URL_KAFKA = "PLAINTEXT://localhost:9092"
 BROKER_URL_SCHEMA_REGISTRY = "http://localhost:8081"
+CONSUMER_NAME = 'client_consumer_jh'
 
 class KafkaConsumer:
     """Defines the base kafka consumer class"""
@@ -40,17 +41,17 @@ class KafkaConsumer:
         #
         self.broker_properties = {
             'bootstrap.servers': BROKER_URL_KAFKA,
-            'group.id': 'client_consumer_jh',
+            'group.id': CONSUMER_NAME,
             'auto.offset.reset': 'earliest',
         }
 
         # TODO: Create the Consumer, using the appropriate type.
         if is_avro is True:
-#             self.broker_properties["schema.registry.url"] = BROKER_URL_SCHEMA_REGISTRY
-            schema_registry = CachedSchemaRegistryClient(BROKER_URL_SCHEMA_REGISTRY)
+            self.broker_properties["schema.registry.url"] = BROKER_URL_SCHEMA_REGISTRY
+#             schema_registry = CachedSchemaRegistryClient(BROKER_URL_SCHEMA_REGISTRY)
             self.consumer = AvroConsumer(
                 self.broker_properties,
-                schema_registry=schema_registry
+#                 schema_registry=schema_registry
             )
         else:
             self.consumer = Consumer(self.broker_properties)
@@ -70,7 +71,7 @@ class KafkaConsumer:
         """Callback for when topic assignment takes place"""
         # TODO: If the topic is configured to use `offset_earliest` set the partition offset to
         # the beginning or earliest
-        logger.info("on_assign is incomplete - skipping")
+#         logger.info("on_assign is incomplete - skipping")
         for partition in partitions:
             partition.offset = OFFSET_BEGINNING
 
@@ -90,7 +91,7 @@ class KafkaConsumer:
         # TODO: Poll Kafka for messages. Make sure to handle any errors or exceptions.
         # Additionally, make sure you return 1 when a message is processed, and 0 when no message
         # is retrieved.
-        logger.info("_consume is incomplete - skipping")
+#         logger.info("_consume is incomplete - skipping")
         
         while True:
             message = self.consumer.poll(1.0)
@@ -101,7 +102,7 @@ class KafkaConsumer:
                 print(f"error from consumer {message.error()}")
                 return 0
             else:
-                print(f"consumed message {message.key()}: {message.value()}")
+                print(f"""\nCONSUMED MESSAGE FROM TOPIC {self.topic_name_pattern}:\n{message.key()}: {message.value()}\n""")
                 return 1
 
 

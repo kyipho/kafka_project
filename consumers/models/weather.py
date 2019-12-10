@@ -1,5 +1,6 @@
 """Contains functionality related to Weather"""
 import logging
+import json
 from confluent_kafka import avro
 
 logger = logging.getLogger(__name__)
@@ -20,6 +21,6 @@ class Weather:
         logger.info("weather process_message is incomplete - skipping")
         # TODO: Process incoming weather messages. Set the temperature and status.
         
-        value = avro.loads(message.value())
-        self.temperature = value['temperature']
-        self.status = value['status']
+        value = message.value()
+        self.temperature = value["temperature"]
+        self.status = value["status"]

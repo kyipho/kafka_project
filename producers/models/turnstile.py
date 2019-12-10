@@ -47,9 +47,10 @@ class Turnstile(Producer):
             num_replicas=1,
         )
         self.station_name = station_name
-        self.station = str(station)
+        self.station = station
         self.turnstile_hardware = TurnstileHardware(station)
         self.line = station.color.name
+        self.station_id = station.station_id
 
     def run(self, timestamp, time_step):
         """Simulates riders entering through the turnstile."""
@@ -67,9 +68,9 @@ class Turnstile(Producer):
                 topic=self.topic_name,
                 key={"timestamp": self.timestamp},
                 value={
-                    "station_id": self.station,
-                    "station_name": self.station_name,
-                    "line": self.line
+                    "station_id": str(self.station_id),
+                    "station_name": str(self.station_name),
+                    "line": str(self.line)
                 },
                 key_schema=Turnstile.key_schema,
                 value_schema=Turnstile.value_schema

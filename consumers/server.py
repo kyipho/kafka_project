@@ -64,18 +64,18 @@ def run_server():
     # Build kafka consumers
     consumers = [
         KafkaConsumer(
-            "(\w*|\.)*weather(.(\w*|\.))*",
+            "org.chicago.weather_events",
             weather_model.process_message,
             offset_earliest=True,
         ),
         KafkaConsumer(
-            "(\w*|\.)*stations.table(.(\w*|\.))",
+            "org.chicago.cta.stations.table.v1",
             lines.process_message,
             offset_earliest=True,
             is_avro=False,
         ),
         KafkaConsumer(
-            "(\w*|\.)*station.arrivals.(.(\w*|\.))*",
+            "org.chicago.cta.station.arrivals",
             lines.process_message,
             offset_earliest=True,
         ),

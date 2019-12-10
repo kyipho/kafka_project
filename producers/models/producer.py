@@ -41,11 +41,11 @@ class Producer:
         # for other configuration: https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
         self.broker_properties = {
             'bootstrap.servers': BROKER_URL_KAFKA,
-#             'schema.registry.url': BROKER_URL_SCHEMA_REGISTRY,
+            'schema.registry.url': BROKER_URL_SCHEMA_REGISTRY,
             'group.id': 'client_producer_jh',
         }
         
-        schema_registry = CachedSchemaRegistryClient(BROKER_URL_SCHEMA_REGISTRY)
+#         schema_registry = CachedSchemaRegistryClient(BROKER_URL_SCHEMA_REGISTRY)
 
         # If the topic does not already exist, try to create it
         if self.topic_name not in Producer.existing_topics:
@@ -55,7 +55,7 @@ class Producer:
         # TODO: Configure the AvroProducer
         self.producer = AvroProducer(
             self.broker_properties,
-            schema_registry=schema_registry,
+#             schema_registry=schema_registry,
             default_key_schema=self.key_schema,
             default_value_schema=self.value_schema,
         )

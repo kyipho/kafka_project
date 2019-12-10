@@ -79,4 +79,4 @@ async def transform_stations(stations):
 if __name__ == "__main__":
     app.main()
 
-# to see results, run `python connector.py` first to start the connector, then `faust -A faust_stream worker -l info` or `python faust_stream.py worker` to start the faust worker, then `kafka-console-consumer --bootstrap-server localhost:9092 --topic stations.table --from-beginning` to see results.
+# to see results, run `python connector.py` first to start the connector, then `faust -A faust_stream worker -l info` or `python faust_stream.py worker` to start the faust worker, then `kafka-console-consumer --bootstrap-server localhost:9092 --topic org.chicago.cta.stations.table.v1 --from-beginning` to see results.
