@@ -9,21 +9,25 @@ However, when you are ready to verify the end-to-end system prior to submission,
 To run the `producer`:
 
 `cd producers`
+
 `python simulation.py`
 
 To run the Faust Stream Processing Application:
 
 `cd consumers`
+
 `faust -A faust_stream worker -l info`
 
 To run the KSQL Creation Script:
 
 `cd consumers`
+
 `python ksql.py`
 
 To run the `consumer`:
 
 `cd consumers`
+
 `python server.py`
 
 Once the server is running, you may hit `Ctrl+C` at any time to exit.
