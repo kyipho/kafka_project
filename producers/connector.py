@@ -20,7 +20,7 @@ def configure_connector():
         logging.debug("connector already created skipping recreation")
         return
 
-    # TODO: Complete the Kafka Connect Config below.
+    # DONE: Complete the Kafka Connect Config below.
 
     # Directions: Use the JDBC Source Connector to connect to Postgres. Load the `stations` table using incrementing mode, with `stop_id` as the incrementing column name.
 
@@ -39,22 +39,16 @@ def configure_connector():
                "value.converter": "org.apache.kafka.connect.json.JsonConverter",
                "value.converter.schemas.enable": "false",
                "batch.max.rows": "500",
-               # TODO
+               # DONE
                "connection.url": "jdbc:postgresql://localhost:5432/cta",
-               # TODO
                "connection.user": "cta_admin",
-               # TODO
                "connection.password": "chicago",
-               # TODO
                "table.whitelist": "stations",
-               # TODO
                "mode": "incrementing",
-               # TODO
                "incrementing.column.name": "stop_id",
-               # TODO
                "topic.prefix": "connect-",
-               # TODO
                "poll.interval.ms": "5000",
+               # /DONE
            }
        }),
     )

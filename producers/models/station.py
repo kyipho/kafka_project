@@ -17,7 +17,7 @@ class Station(Producer):
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_key.json")
 
     #
-    # TODO: Define this value schema in `schemas/station_value.json, then uncomment the below
+    # DONE: Define this value schema in `schemas/station_value.json, then uncomment the below
     #
     value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_value.json")
 
@@ -33,21 +33,18 @@ class Station(Producer):
 
         #
         #
-        # TODO: Complete the below by deciding on a topic name, number of partitions, and number of
+        # DONE: Complete the below by deciding on a topic name, number of partitions, and number of
         # replicas
-        #
-        #
 #       # based on server.py, topic name must include 'station.arrivals'
         topic_name = "org.chicago.cta.station.arrivals"
         super().__init__(
             topic_name,
+            # DONE
             key_schema=Station.key_schema,
-            # TODO:
             value_schema=Station.value_schema,
-            # TODO:
             num_partitions=1,
-            # TODO:
             num_replicas=1,
+            # /DONE
         )
 
         self.station_id = int(station_id)
@@ -61,34 +58,35 @@ class Station(Producer):
 
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
-        #
-        #
-        # TODO: Complete this function by producing an arrival message to Kafka
-        #
+        # DONE: Complete this function by producing an arrival message to Kafka
         self.train = train
         self.direction = direction
         self.prev_station_id = prev_station_id
         self.prev_direction = prev_direction
         self.train_id = train.train_id
-        #
-#         logger.info("arrival kafka integration incomplete - skipping")
-        self.producer.produce(
-           topic=self.topic_name,
-            key={"timestamp": self.time_millis()},
-            value={
-                # TODO: Configure this
-                "station_id": str(self.station_id),
-                "train_id": str(self.train_id),
-                "direction": str(self.direction),
-                "line": str(self.color.name),
-                "train_status": str(self.train.status),
-                "prev_station_id": str(self.prev_station_id),
-                "prev_direction": str(self.prev_direction)
-            },
-            key_schema=Station.key_schema,
-            value_schema=Station.value_schema
-        )
-        logger.info("produced arrival message")
+        
+        # message value will also be used in logger
+        message_value = {
+            "station_id": str(self.station_id),
+            "train_id": str(self.train_id),
+            "direction": str(self.direction),
+            "line": str(self.color.name),
+            "train_status": str(self.train.status),
+            "prev_station_id": str(self.prev_station_id),
+            "prev_direction": str(self.prev_direction)
+        }
+
+        try:
+            self.producer.produce(
+               topic=self.topic_name,
+                key={"timestamp": self.time_millis()},
+                value=message_value,
+                key_schema=Station.key_schema,
+                value_schema=Station.value_schema
+            )
+            logger.info(f"\n\nSUCCESSFULLY PRODUCED ARRIVAL MESSAGE\n{message_value}\n")
+        except:
+            logger.warn(f"\n\nFAILED TO PRODUCE ARRIVAL MESSAGE\n{message_value}\n")
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(

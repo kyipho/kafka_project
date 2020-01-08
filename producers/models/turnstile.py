@@ -7,16 +7,11 @@ from confluent_kafka import avro
 from models.producer import Producer
 from models.turnstile_hardware import TurnstileHardware
 
-
 logger = logging.getLogger(__name__)
-
 
 class Turnstile(Producer):
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/turnstile_key.json")
-
-    #
-    # TODO: Define this value schema in `schemas/turnstile_value.json, then uncomment the below
-    #
+    # DONE: Define this value schema in `schemas/turnstile_value.json, then uncomment the below
     value_schema = avro.load(
        f"{Path(__file__).parents[0]}/schemas/turnstile_value.json"
     )
@@ -31,11 +26,7 @@ class Turnstile(Producer):
             .replace("'", "")
         )
 
-        #
-        #
-        # TODO: Complete the below by deciding on a topic name, number of partitions, and number of replicas
-        #
-        #
+        # DONE: Complete the below by deciding on a topic name, number of partitions, and number of replicas
         super().__init__(
             "org.chicago.cta.station.turnstile_events",
             key_schema=Turnstile.key_schema,
@@ -61,18 +52,24 @@ class Turnstile(Producer):
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
 #         logger.info("turnstile kafka integration incomplete - skipping")
         #
-        # TODO: Complete this function by emitting a message to the turnstile topic for the number of entries that were calculated
+        # DONE: Complete this function by emitting a message to the turnstile topic for the number of entries that were calculated
         #
+        # message value will also be used in logger
+        message_value = {
+            "station_id": str(self.station_id),
+            "station_name": str(self.station_name),
+            "line": str(self.line)
+        }
+
         for i in range(num_entries):
-            self.producer.produce(
-                topic=self.topic_name,
-                key={"timestamp": self.timestamp},
-                value={
-                    "station_id": str(self.station_id),
-                    "station_name": str(self.station_name),
-                    "line": str(self.line)
-                },
-                key_schema=Turnstile.key_schema,
-                value_schema=Turnstile.value_schema
-            )
-            logger.info("produced turnstile message")
+            try:
+                self.producer.produce(
+                    topic=self.topic_name,
+                    key={"timestamp": self.timestamp},
+                    value=message_value,
+                    key_schema=Turnstile.key_schema,
+                    value_schema=Turnstile.value_schema
+                )
+                logger.info(f"\n\nSUCCESSFULLY PRODUCED TURNSTILE MESSAGE\n{message_value}\n")
+            except:
+                logger.warn(f"\n\nFAILED TO PRODUCE TURNSTILE MESSAGE\n{message_value}\n")
